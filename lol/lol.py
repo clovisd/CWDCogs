@@ -31,11 +31,11 @@ from __main__ import send_cmd_help
 from discord.ext import commands
 
 
-class League:
+class LOL:
     def __init__(self, bot):
         self.bot = bot
         self.color = 0xCC9835
-        self.profile = "data/league/apikey.json"
+        self.profile = "data/lol/apikey.json"
         self.riceCog = dataIO.load_json(self.profile)
         self.api_error_lolchampgg = "Your API key for lolchamp.gg is invalid. Set it with `{}lolset lolchampgg [apikey]`"
         self.api_error_riot = "Your API key for riotgames is invalid. Set it with `{}lolset riot [apikey]`"
@@ -139,15 +139,15 @@ class League:
             player['lolsumName'] = participant['lolsumName']
             players.append(player)
             try:#To get user tier and division and lp
-                leagues = lolsum.leagues()
+                lols = lolsum.lols()
                 name = lolsum.name
-                tier = leagues[0].tier.name.title()
-                tier_info = leagues[0].to_json()
+                tier = lols[0].tier.name.title()
+                tier_info = lols[0].to_json()
                 tier_info_dict = json.loads(tier_info)
                 tier_users = tier_info_dict['entries']
                 user_stats = [s for s in tier_users if s['playerOrTeamName'] == name]
                 div = user_stats[0]['division']
-                lp = user_stats[0]['leaguePoints']
+                lp = user_stats[0]['lolPoints']
                 if div == "V":
                     div = "5"
                 elif div == "IV":
@@ -346,14 +346,14 @@ class League:
         ma_pages = len(lolsum.mastery_pages())
         ru_pages = len(lolsum.rune_pages())
         if int(lolsum.level) == 30:#To get user tier and division and lp
-            leagues = lolsum.leagues()
-            tier = leagues[0].tier.name.title()
-            tier_info = leagues[0].to_json()
+            lols = lolsum.lols()
+            tier = lols[0].tier.name.title()
+            tier_info = lols[0].to_json()
             tier_info_dict = json.loads(tier_info)
             tier_users = tier_info_dict['entries']
             user_stats = [s for s in tier_users if s['playerOrTeamName'] == name]
             div = user_stats[0]['division']
-            lp = user_stats[0]['leaguePoints']
+            lp = user_stats[0]['lolPoints']
             losses = user_stats[0]['losses']
             wins = user_stats[0]['wins']
             total_games = wins + losses
@@ -370,7 +370,7 @@ class League:
         #The message that is sent
         embed = discord.Embed(description = "{}".format(_id), color = self.color)
         embed.add_field(name="Region", value = region.upper())
-        embed.set_thumbnail(url='http://vignette1.wikia.nocookie.net/leagueoflegends/images/1/12/League_of_Legends_Icon.png/revision/latest?cb=20150402234343')
+        embed.set_thumbnail(url='http://vignette1.wikia.nocookie.net/loloflegends/images/1/12/LOL_of_Legends_Icon.png/revision/latest?cb=20150402234343')
 
         embed.set_author(name="{}".format(name))
         embed.add_field(name="Level", value = "{}".format(level))
@@ -412,7 +412,7 @@ class League:
             await self.bot.say("Probably an invalid lolchamp. Either wrong "
                                "name or error. Check your console.")
             return
-        image_link = "http://ddragon.leagueoflegends.com/cdn/6.24.1/img/lolchamp/" + champ.image.link
+        image_link = "http://ddragon.loloflegends.com/cdn/6.24.1/img/lolchamp/" + champ.image.link
         name = champ.name
         _id = champ.id
         champggname = champ.name.replace(" ", "").replace("'", "")
@@ -578,15 +578,15 @@ class League:
         await self.bot.say(embed=embed)
 
 def check_folder():
-    if not os.path.exists("data/league"):
-        print("Creating data/league folder")
-        os.makedirs("data/league")
+    if not os.path.exists("data/lol"):
+        print("Creating data/lol folder")
+        os.makedirs("data/lol")
 
 def check_file():
     data = {}
-    f = "data/league/apikey.json"
+    f = "data/lol/apikey.json"
     if not dataIO.is_valid_json(f):
-        print("Creating data/league/apikey.json")
+        print("Creating data/lol/apikey.json")
         dataIO.save_json(f, data)
 
 
@@ -595,6 +595,6 @@ def setup(bot):
     check_folder()
     check_file()
     if isAvailable:
-        bot.add_cog(League(bot))
+        bot.add_cog(LOL(bot))
     else:
         raise RuntimeError("You need to run `pip3 install cassiopeia`")
